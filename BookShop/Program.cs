@@ -13,23 +13,26 @@ namespace BookShop
             list.Add(new Book("Оно3", "America", "Horror", "Stephen King", 700, 1995, 1000));
             Shop sh = new Shop(Properties.Resources.ShopName, "ТЦ \"Рассвет\"", list);
             sh.GetShopName();
-            while (true)
-            {
-                Console.Write("Введите команду: ");
+            Command.HelpCommand();
+            while (true)            
+            {                
+                Console.Write("Введите новую команду: ");
                 string command = Console.ReadLine();
                 switch (command)
                 {
                     case "help": Command.HelpCommand();break;
-                    case "addbook": sh.AddABook(Command.AddBookCommand()); break;
-                    case "removebook": sh.DeleteBookByIndex(Command.RemoveBookCommand()); break;
-                    case "removebookname": sh.DeleteBookByName(Command.RemoveBookCommandName()); break;
-                    default: Console.WriteLine("Не удалось распознать команду. Наберите help для списка команд"); break;
+                    case "addbook": sh.AddABook(Command.AddBookCommand()); sh.GetAllBooks(); break;
+                    case "removebook": sh.DeleteBookByIndex(Command.RemoveBookCommand()); sh.GetAllBooks(); break;
+                    case "removebookname": sh.DeleteBookByName(Command.RemoveBookCommandName());sh.GetAllBooks(); break;
+                    case "getbooks": Command.GetAllBookCommand(); sh.GetAllBooks(); break;
+                    case "clear": Console.Clear(); break;
+                    default: Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Не удалось распознать команду. Наберите help для списка команд"); Console.ForegroundColor = ConsoleColor.White; break;
                 }
                     
             }
         }
     }
-    class Book : IEnumerable, IComparable
+    class Book : IEnumerable, IComparable, IBook
     {
         public string Name { get; set; }
         public string Publishing { get; set; }
@@ -71,11 +74,11 @@ namespace BookShop
         }
     }
 
-    class Shop
+    class Shop : IShop
     {
         List<Book> Books;
-        string Name { get; set; }
-        string Address { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
         public Shop (string name, string address, List<Book> books)
         {
             Name = name;
@@ -88,9 +91,11 @@ namespace BookShop
         }
         public void GetAllBooks() 
         {
+            int index = 1;
             foreach (Book book in Books)
             {
-                Console.WriteLine(book);
+                Console.WriteLine("Индекс: {0} {1}", index,book);
+                index++;
             }
         }
         public void AddABook(Book book)
@@ -108,7 +113,7 @@ namespace BookShop
         }
         public void DeleteBookByIndex(int index)
         {
-            Books.RemoveAt(index);
+            Books.RemoveAt(index-1);
         }
     }
 
@@ -116,7 +121,7 @@ namespace BookShop
     {
         public static void HelpCommand() 
         {
-            Console.WriteLine("Используйте addbook для добавления книги, removebook для удаления книги по индексу, removebookname для удаления книги по имени,getbooks для списка книг:");
+            Console.WriteLine("Используйте addbook для добавления книги, removebook для удаления книги по индексу, removebookname для удаления книги по имени,getbooks для списка книг, clear для очистки консоли:");
         }
         public static Book AddBookCommand()
         {
@@ -153,5 +158,29 @@ namespace BookShop
         {
             Console.WriteLine("Список книг в магазине:");
         }
+    }
+
+    interface IShop 
+    {
+
+        string Name { get; set; }
+        string Address { get; set; }
+        public void GetShopName();
+
+        public void GetAllBooks();
+        public void AddABook(Book book);
+        public void DeleteBookByName(string name);
+        public void DeleteBookByIndex(int index);
+    }
+
+    interface IBook
+    {
+        public string Name { get; set; }
+        public string Publishing { get; set; }
+        public string Genre { get; set; }
+        public string Author { get; set; }
+        public int NumberPages { get; set; }
+        public int YearOfPublishing { get; set; }
+        public int Price { get; set; }
     }
 }
