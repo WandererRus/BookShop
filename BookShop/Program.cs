@@ -11,18 +11,22 @@ namespace BookShop
             list.Add(new Book("Оно", "America", "Horror", "Stephen King", 700, 1995, 1000));
             list.Add(new Book("Оно2", "America", "Horror", "Stephen King", 700, 1995, 1000));
             list.Add(new Book("Оно3", "America", "Horror", "Stephen King", 700, 1995, 1000));
-            Shop sh = new Shop("Читай-город", "ТЦ \"Рассвет\"", list);
-            sh.GetAllBooks();
-            Console.WriteLine();
-            sh.AddABook(new Book("Оно4", "America", "Horror", "Stephen King", 700, 1995, 1000));
-            sh.GetAllBooks();
-            Console.WriteLine();
-            sh.DeleteBookByName("Оно4");
-            sh.GetAllBooks();
-            Console.WriteLine();
-            sh.DeleteBookByIndex(0);
-            sh.GetAllBooks();
-            Console.WriteLine();
+            Shop sh = new Shop(Properties.Resources.ShopName, "ТЦ \"Рассвет\"", list);
+            sh.GetShopName();
+            while (true)
+            {
+                Console.Write("Введите команду: ");
+                string command = Console.ReadLine();
+                switch (command)
+                {
+                    case "help": Command.HelpCommand();break;
+                    case "addbook": sh.AddABook(Command.AddBookCommand()); break;
+                    case "removebook": sh.DeleteBookByIndex(Command.RemoveBookCommand()); break;
+                    case "removebookname": sh.DeleteBookByName(Command.RemoveBookCommandName()); break;
+                    default: Console.WriteLine("Не удалось распознать команду. Наберите help для списка команд"); break;
+                }
+                    
+            }
         }
     }
     class Book : IEnumerable, IComparable
@@ -78,6 +82,10 @@ namespace BookShop
             Address = address;
             Books = books;
         }
+        public void GetShopName () 
+        {
+            Console.WriteLine("Добро пожаловать в {0} по адресу {1}", Name, Address);
+        }
         public void GetAllBooks() 
         {
             foreach (Book book in Books)
@@ -101,6 +109,49 @@ namespace BookShop
         public void DeleteBookByIndex(int index)
         {
             Books.RemoveAt(index);
+        }
+    }
+
+    class Command 
+    {
+        public static void HelpCommand() 
+        {
+            Console.WriteLine("Используйте addbook для добавления книги, removebook для удаления книги по индексу, removebookname для удаления книги по имени,getbooks для списка книг:");
+        }
+        public static Book AddBookCommand()
+        {
+            Book book;
+            Console.Write("Введите имя книги: ");
+            string name = Console.ReadLine();
+            Console.Write("Введите издательство книги: ");
+            string publishing = Console.ReadLine();
+            Console.Write("Введите жанр книги: ");
+            string genre = Console.ReadLine();
+            Console.Write("Введите автора книги: ");
+            string author = Console.ReadLine();
+            Console.Write("Введите количество страниц книги: ");
+            int numberpage = Int32.Parse(Console.ReadLine());
+            Console.Write("Введите год издания книги: ");
+            int yearofpublishing = Int32.Parse(Console.ReadLine());
+            Console.Write("Введите цену книги: ");
+            int price = Int32.Parse(Console.ReadLine());
+            book = new Book(name, publishing, genre, author, numberpage, yearofpublishing, price);
+            return book;
+        }
+        public static int RemoveBookCommand()
+        {
+            Console.WriteLine("Укажите индекс удаляемой книги:");
+            return Int32.Parse(Console.ReadLine());
+
+        }
+        public static string RemoveBookCommandName()
+        {
+            Console.WriteLine("Укажите имя удаляемой книги");
+            return Console.ReadLine();
+        }
+        public static void GetAllBookCommand()
+        {
+            Console.WriteLine("Список книг в магазине:");
         }
     }
 }
